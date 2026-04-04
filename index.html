@@ -13,6 +13,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -489,7 +490,11 @@
           <div class="rounded-2xl bg-white p-10 shadow-lg ring-1 ring-gray-100">
             <h3 class="text-xl font-bold text-navy-900 mb-2 font-heading">Request a Lawn Sign</h3>
             <p class="text-sm text-navy-600 mb-6">Want to show your support? Fill in your details and I'll arrange to get a lawn sign to you.</p>
-            <form action="mailto:DougMacQuispamsis@gmail.com" method="post" enctype="text/plain" class="space-y-5">
+            <form id="contact-form" class="space-y-5">
+              <!-- Honeypot -->
+              <div style="position:absolute;left:-9999px" aria-hidden="true">
+                <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
+              </div>
               <div>
                 <label for="name" class="block text-sm font-semibold text-navy-900 mb-1.5">Full Name</label>
                 <input type="text" id="name" name="name" required class="block w-full rounded-lg border border-gray-300 px-4 py-3 text-base text-navy-900 placeholder:text-gray-400 focus:border-campaign-500 focus:ring-2 focus:ring-campaign-500/20 focus:outline-none transition-colors cursor-pointer" placeholder="Your name" />
@@ -506,9 +511,12 @@
                 <label for="message" class="block text-sm font-semibold text-navy-900 mb-1.5">Message (Optional)</label>
                 <textarea id="message" name="message" rows="3" class="block w-full rounded-lg border border-gray-300 px-4 py-3 text-base text-navy-900 placeholder:text-gray-400 focus:border-campaign-500 focus:ring-2 focus:ring-campaign-500/20 focus:outline-none transition-colors resize-none cursor-text" placeholder="Questions, comments, or issues you care about..."></textarea>
               </div>
-              <button type="submit" class="w-full rounded-full bg-cta px-6 py-3.5 text-base font-bold text-white shadow-sm hover:bg-cta-hover transition-colors cursor-pointer">
+              <!-- Cloudflare Turnstile -->
+              <div class="cf-turnstile" data-sitekey="0x4AAAAAAC0TyDMnuZmMUCaX" data-theme="light"></div>
+              <button type="submit" id="submit-btn" class="w-full rounded-full bg-cta px-6 py-3.5 text-base font-bold text-white shadow-sm hover:bg-cta-hover transition-colors cursor-pointer">
                 Send Message
               </button>
+              <div id="form-status" class="text-sm text-center hidden"></div>
             </form>
           </div>
         </div>
@@ -567,6 +575,47 @@
     window.addEventListener('scroll', () => {
       nav.classList.toggle('shadow-md', window.scrollY > 50);
     }, { passive: true });
+
+    // Contact form - Turnstile validation before mailto
+    const form = document.getElementById('contact-form');
+    const statusEl = document.getElementById('form-status');
+    const submitBtn = document.getElementById('submit-btn');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      // Honeypot check
+      if (form.querySelector('[name="_gotcha"]').value) return;
+
+      // Check Turnstile
+      const token = form.querySelector('[name="cf-turnstile-response"]');
+      if (!token || !token.value) {
+        statusEl.classList.remove('hidden');
+        statusEl.textContent = 'Please complete the security check first.';
+        statusEl.className = 'text-sm text-center text-red-600 font-semibold mt-2';
+        return;
+      }
+
+      // Build mailto
+      const name = form.querySelector('#name').value.trim();
+      const email = form.querySelector('#email').value.trim();
+      const address = form.querySelector('#address').value.trim();
+      const message = form.querySelector('#message').value.trim();
+
+      const subject = encodeURIComponent('Campaign Contact: ' + name);
+      const body = encodeURIComponent(
+        'Name: ' + name + '\n' +
+        'Email: ' + email + '\n' +
+        'Address: ' + (address || 'Not provided') + '\n\n' +
+        (message || 'Lawn sign request - no additional message.')
+      );
+
+      window.location.href = 'mailto:DougMacQuispamsis@gmail.com?subject=' + subject + '&body=' + body;
+
+      statusEl.classList.remove('hidden');
+      statusEl.textContent = 'Your email client should open. If not, email DougMacQuispamsis@gmail.com directly.';
+      statusEl.className = 'text-sm text-center text-campaign-700 font-semibold mt-2';
+    });
   </script>
 
 </body>
