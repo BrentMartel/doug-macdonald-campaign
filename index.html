@@ -54,7 +54,47 @@
       z-index: 1;
     }
     .photo-section > * { position: relative; z-index: 2; }
+    /* Scroll-triggered animations */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.from-left {
+      transform: translateX(-40px);
+    }
+    .reveal.from-right {
+      transform: translateX(40px);
+    }
+    .reveal.in-view {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+    /* Stagger children */
+    .reveal-stagger > .reveal:nth-child(2) { transition-delay: 0.1s; }
+    .reveal-stagger > .reveal:nth-child(3) { transition-delay: 0.2s; }
+    .reveal-stagger > .reveal:nth-child(4) { transition-delay: 0.3s; }
+    .reveal-stagger > .reveal:nth-child(5) { transition-delay: 0.35s; }
+    .reveal-stagger > .reveal:nth-child(6) { transition-delay: 0.4s; }
+    /* Parallax photo sections */
+    .parallax-bg {
+      background-attachment: fixed;
+      background-size: cover;
+      background-position: center;
+    }
+    /* Counter animation */
+    .stat-number {
+      transition: opacity 0.5s ease;
+    }
+    /* Scroll-driven image float */
+    .scroll-float {
+      will-change: transform;
+      transition: transform 0.1s linear;
+    }
     @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .scroll-float { transform: none !important; }
+      .parallax-bg { background-attachment: scroll; }
       .platform-card { transition: none; }
       .platform-card:hover { transform: none; }
     }
@@ -148,20 +188,20 @@
   <!-- TRUST BAR / STATS -->
   <section class="bg-white border-b border-gray-100" aria-label="Key statistics">
     <div class="mx-auto max-w-7xl px-6 lg:px-8 py-14">
-      <dl class="grid grid-cols-2 gap-x-8 gap-y-10 text-center lg:grid-cols-4">
-        <div class="mx-auto flex flex-col gap-y-2">
+      <dl class="grid grid-cols-2 gap-x-8 gap-y-10 text-center lg:grid-cols-4 reveal-stagger">
+        <div class="mx-auto flex flex-col gap-y-2 reveal">
           <dd class="text-3xl font-bold tracking-tight text-navy-900 sm:text-5xl font-heading">30+</dd>
           <dt class="text-sm text-navy-600 font-medium">Years in Quispamsis</dt>
         </div>
-        <div class="mx-auto flex flex-col gap-y-2">
+        <div class="mx-auto flex flex-col gap-y-2 reveal">
           <dd class="text-3xl font-bold tracking-tight text-navy-900 sm:text-5xl font-heading">40+</dd>
           <dt class="text-sm text-navy-600 font-medium">Years CPA Experience</dt>
         </div>
-        <div class="mx-auto flex flex-col gap-y-2">
+        <div class="mx-auto flex flex-col gap-y-2 reveal">
           <dd class="text-3xl font-bold tracking-tight text-navy-900 sm:text-5xl font-heading">12</dd>
           <dt class="text-sm text-navy-600 font-medium">Years Town Treasurer</dt>
         </div>
-        <div class="mx-auto flex flex-col gap-y-2">
+        <div class="mx-auto flex flex-col gap-y-2 reveal">
           <dd class="text-3xl font-bold tracking-tight text-navy-900 sm:text-5xl font-heading">2</dd>
           <dt class="text-sm text-navy-600 font-medium">Children Raised Here</dt>
         </div>
@@ -169,11 +209,12 @@
     </div>
   </section>
 
-  <!-- ABOUT - with river photo -->
+  <!-- ABOUT -->
   <section id="about" class="bg-gray-50 py-24 sm:py-32" aria-labelledby="about-heading">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-none lg:grid lg:grid-cols-2 lg:gap-16 lg:items-center">
-        <div>
+      <div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-none lg:grid lg:grid-cols-2 lg:gap-16 lg:items-start">
+        <!-- Left column: bio + Quispamsis sign -->
+        <div class="reveal from-left">
           <p class="text-sm font-bold uppercase tracking-widest text-campaign-700">About Doug</p>
           <h2 id="about-heading" class="mt-3 text-3xl font-bold tracking-tight text-navy-900 sm:text-4xl font-heading">Your neighbour.<br>Your accountant.<br>Your advocate.</h2>
           <p class="mt-6 text-lg text-navy-600 leading-relaxed">
@@ -185,14 +226,23 @@
           <p class="mt-4 text-lg text-navy-600 leading-relaxed">
             Now I want to bring that same expertise and dedication to Quispamsis Town Council &mdash; to ensure your tax dollars are spent wisely, our infrastructure keeps pace with growth, and every resident has a voice.
           </p>
-        </div>
-        <div class="mt-12 lg:mt-0">
-          <div class="overflow-hidden rounded-2xl shadow-xl">
-            <img src="photos/nb-river.jpg" alt="Autumn river scene in New Brunswick - the natural beauty of our region" class="w-full h-80 object-cover" loading="lazy" />
-          </div>
-          <div class="mt-4 rounded-2xl bg-white p-6 shadow-lg ring-1 ring-gray-100">
+          <div class="mt-8 rounded-2xl bg-white p-5 shadow-lg ring-1 ring-gray-100 hidden lg:block scroll-float" data-float-speed="0.04" data-float-dir="1">
             <img src="quispamsis-sign.jpg" alt="Quispamsis - #1 Community to Live in Atlantic Canada" class="rounded-xl w-full" loading="lazy" />
-            <p class="mt-4 text-center text-sm text-navy-600 font-medium">"There Is No Other" &mdash; #1 Community to Live in Atlantic Canada</p>
+            <p class="mt-3 text-center text-sm text-navy-600 font-medium">"There Is No Other" &mdash; #1 Community to Live in Atlantic Canada</p>
+          </div>
+        </div>
+        <!-- Right column: full fancy pants feature -->
+        <div class="mt-12 lg:mt-24 reveal from-right">
+          <div class="overflow-hidden rounded-2xl shadow-xl bg-gradient-to-b from-campaign-50 via-white to-campaign-50 text-center px-8 pt-10 pb-8 scroll-float" data-float-speed="0.05" data-float-dir="-1">
+            <img src="photos/doug-fancy-pants.png" alt="Doug MacDonald in his signature fancy pants" class="mx-auto h-96 object-contain drop-shadow-xl" loading="lazy" />
+            <p class="mt-6 text-3xl sm:text-4xl font-bold text-navy-900 font-heading leading-tight">More Than<br>Fancy Pants.</p>
+            <p class="mt-3 text-base font-semibold text-navy-700">Support Doug MacDonald<br>for Quispamsis Councillor</p>
+            <p class="mt-2 text-sm font-bold text-campaign-700 uppercase tracking-wide">Vote on May 11<sup>th</sup>, 2026</p>
+          </div>
+          <!-- Quispamsis sign: shown below fancy pants on mobile only -->
+          <div class="mt-6 rounded-2xl bg-white p-5 shadow-lg ring-1 ring-gray-100 lg:hidden">
+            <img src="quispamsis-sign.jpg" alt="Quispamsis - #1 Community to Live in Atlantic Canada" class="rounded-xl w-full" loading="lazy" />
+            <p class="mt-3 text-center text-sm text-navy-600 font-medium">"There Is No Other" &mdash; #1 Community to Live in Atlantic Canada</p>
           </div>
         </div>
       </div>
@@ -202,7 +252,7 @@
   <!-- PHOTO BREAK - Autumn Trail -->
   <section class="photo-section h-64 sm:h-80 bg-cover bg-center bg-fixed" style="background-image: url('photos/autumn-trail.jpg')" aria-label="Autumn forest trail in the Quispamsis area">
     <div class="h-full flex items-center justify-center">
-      <blockquote class="text-center px-6">
+      <blockquote class="text-center px-6 reveal">
         <p class="text-2xl sm:text-3xl font-bold text-white font-heading max-w-2xl">"We have something special here. I'm running to make sure it stays that way."</p>
         <cite class="mt-4 block text-campaign-400 font-semibold not-italic">&mdash; Doug MacDonald</cite>
       </blockquote>
@@ -212,15 +262,15 @@
   <!-- PLATFORM -->
   <section id="platform" class="bg-white py-24 sm:py-32" aria-labelledby="platform-heading">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <div class="mx-auto max-w-2xl text-center">
+      <div class="mx-auto max-w-2xl text-center reveal">
         <p class="text-sm font-bold uppercase tracking-widest text-campaign-700">My Platform</p>
         <h2 id="platform-heading" class="mt-3 text-3xl font-bold tracking-tight text-navy-900 sm:text-4xl font-heading">What I Stand For</h2>
         <p class="mt-6 text-lg text-navy-600">Practical solutions built on experience, accountability, and a genuine love for our community.</p>
       </div>
-      <div class="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+      <div class="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-3 reveal-stagger">
 
         <!-- Fiscal Responsibility -->
-        <div class="platform-card rounded-2xl bg-white p-8 shadow-md ring-1 ring-gray-100">
+        <div class="platform-card rounded-2xl bg-white p-8 shadow-md ring-1 ring-gray-100 reveal">
           <div class="size-12 rounded-xl bg-campaign-50 flex items-center justify-center mb-6" aria-hidden="true">
             <svg class="size-6 text-campaign-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill="currentColor"><path d="M136 24c0-13.3 10.7-24 24-24s24 10.7 24 24l0 40 56 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-114.9 0c-24.9 0-45.1 20.2-45.1 45.1 0 22.5 16.5 41.5 38.7 44.7l91.6 13.1c53.8 7.7 93.7 53.7 93.7 108 0 60.3-48.9 109.1-109.1 109.1l-10.9 0 0 40c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-40-72 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l130.9 0c24.9 0 45.1-20.2 45.1-45.1 0-22.5-16.5-41.5-38.7-44.7l-91.6-13.1C55.9 273.5 16 227.4 16 173.1 16 112.9 64.9 64 125.1 64l10.9 0 0-40z"/></svg>
           </div>
@@ -231,7 +281,7 @@
         </div>
 
         <!-- Infrastructure & Growth -->
-        <div class="platform-card rounded-2xl bg-white p-8 shadow-md ring-1 ring-gray-100">
+        <div class="platform-card rounded-2xl bg-white p-8 shadow-md ring-1 ring-gray-100 reveal">
           <div class="size-12 rounded-xl bg-campaign-50 flex items-center justify-center mb-6" aria-hidden="true">
             <svg class="size-6 text-campaign-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"><path d="M223.9 32l-76.2 0c-29.4 0-55.1 20.1-62.1 48.6L1.4 420.5C-6.1 450.7 16.8 480 48 480l175.9 0 0-64c0-17.7 14.3-32 32-32s32 14.3 32 32l0 64 176.1 0c31.2 0 54.1-29.3 46.6-59.5L426.5 80.6C419.4 52.1 393.8 32 364.3 32l-76.4 0 0 64c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-64zm64 192l0 64c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32s32 14.3 32 32z"/></svg>
           </div>
@@ -242,7 +292,7 @@
         </div>
 
         <!-- Community & Sports -->
-        <div class="platform-card rounded-2xl bg-white p-8 shadow-md ring-1 ring-gray-100">
+        <div class="platform-card rounded-2xl bg-white p-8 shadow-md ring-1 ring-gray-100 reveal">
           <div class="size-12 rounded-xl bg-campaign-50 flex items-center justify-center mb-6" aria-hidden="true">
             <svg class="size-6 text-campaign-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" fill="currentColor"><path d="M528 512l-91.6 0c-24.9 0-47.5-14.4-58-36.9l-31.9-68.4 40.5-86.7 141.1 0 0 192zm80-192c17.7 0 32 14.3 32 32l0 128c0 17.7-14.3 32-32 32l-32 0 0-192 32 0zM64 512l-32 0c-17.7 0-32-14.3-32-32L0 352c0-17.7 14.3-32 32-32l32 0 0 192zM420.5-16.4c8.3-13.9 26-19.6 41-12.6s22 24.2 16.7 39.5l-1.2 3-215.4 461.5c-10.5 22.5-33.1 36.9-58 36.9l-91.6 0 0-192 151.3 0 155.7-333.5 1.5-2.9zM178.5-29c16-7.5 35.1-.5 42.5 15.5l72.5 155.3-35.3 75.7-95.2-203.9c-7.5-16-.5-35.1 15.5-42.5z"/></svg>
           </div>
@@ -253,7 +303,7 @@
         </div>
 
         <!-- Housing & Affordability -->
-        <div class="platform-card rounded-2xl bg-white p-8 shadow-md ring-1 ring-gray-100">
+        <div class="platform-card rounded-2xl bg-white p-8 shadow-md ring-1 ring-gray-100 reveal">
           <div class="size-12 rounded-xl bg-campaign-50 flex items-center justify-center mb-6" aria-hidden="true">
             <svg class="size-6 text-campaign-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"><path d="M277.8 8.6c-12.3-11.4-31.3-11.4-43.5 0l-224 208c-9.6 9-12.8 22.9-8 35.1S18.8 272 32 272l16 0 0 176c0 35.3 28.7 64 64 64l288 0c35.3 0 64-28.7 64-64l0-176 16 0c13.2 0 25-8.1 29.8-20.3s1.6-26.2-8-35.1l-224-208zM240 320l32 0c26.5 0 48 21.5 48 48l0 96-128 0 0-96c0-26.5 21.5-48 48-48z"/></svg>
           </div>
@@ -264,7 +314,7 @@
         </div>
 
         <!-- Safety & Livability -->
-        <div class="platform-card rounded-2xl bg-white p-8 shadow-md ring-1 ring-gray-100">
+        <div class="platform-card rounded-2xl bg-white p-8 shadow-md ring-1 ring-gray-100 reveal">
           <div class="size-12 rounded-xl bg-campaign-50 flex items-center justify-center mb-6" aria-hidden="true">
             <svg class="size-6 text-campaign-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"><path d="M256 0c4.6 0 9.2 1 13.4 2.9L457.8 82.8c22 9.3 38.4 31 38.3 57.2-.5 99.2-41.3 280.7-213.6 363.2-16.7 8-36.1 8-52.8 0-172.4-82.5-213.1-264-213.6-363.2-.1-26.2 16.3-47.9 38.3-57.2L242.7 2.9C246.9 1 251.4 0 256 0zm0 66.8l0 378.1c138-66.8 175.1-214.8 176-303.4l-176-74.6 0 0z"/></svg>
           </div>
@@ -275,7 +325,7 @@
         </div>
 
         <!-- Transparency -->
-        <div class="platform-card rounded-2xl bg-white p-8 shadow-md ring-1 ring-gray-100">
+        <div class="platform-card rounded-2xl bg-white p-8 shadow-md ring-1 ring-gray-100 reveal">
           <div class="size-12 rounded-xl bg-campaign-50 flex items-center justify-center mb-6" aria-hidden="true">
             <svg class="size-6 text-campaign-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" fill="currentColor"><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6-46.8 43.5-78.1 95.4-93 131.1-3.3 7.9-3.3 16.7 0 24.6 14.9 35.7 46.2 87.7 93 131.1 47.1 43.7 111.8 80.6 192.6 80.6s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1 3.3-7.9 3.3-16.7 0-24.6-14.9-35.7-46.2-87.7-93-131.1-47.1-43.7-111.8-80.6-192.6-80.6zM144 256a144 144 0 1 1 288 0 144 144 0 1 1 -288 0zm144-64c0 35.3-28.7 64-64 64-11.5 0-22.3-3-31.7-8.4-1 10.9-.1 22.1 2.9 33.2 13.7 51.2 66.4 81.6 117.6 67.9s81.6-66.4 67.9-117.6c-12.2-45.7-55.5-74.8-101.1-70.8 5.3 9.3 8.4 20.1 8.4 31.7z"/></svg>
           </div>
@@ -296,14 +346,14 @@
       <div class="absolute inset-0 bg-navy-900/85"></div>
     </div>
     <div class="mx-auto max-w-7xl px-6 lg:px-8 relative">
-      <div class="mx-auto max-w-2xl text-center">
+      <div class="mx-auto max-w-2xl text-center reveal">
         <p class="text-sm font-bold uppercase tracking-widest text-campaign-400">Why Doug?</p>
         <h2 id="experience-heading" class="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl font-heading">The Experience Quispamsis Needs</h2>
         <p class="mt-6 text-lg text-gray-300">Not a politician. A professional who knows how to manage budgets, plan ahead, and get things done.</p>
       </div>
       <div class="mx-auto mt-16 max-w-2xl lg:mx-0 lg:max-w-none">
-        <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          <div class="rounded-2xl bg-white/5 backdrop-blur-sm p-8 ring-1 ring-white/10">
+        <div class="grid grid-cols-1 gap-8 lg:grid-cols-2 reveal-stagger">
+          <div class="rounded-2xl bg-white/5 backdrop-blur-sm p-8 ring-1 ring-white/10 reveal">
             <h3 class="text-lg font-bold text-white flex items-center gap-3 font-heading">
               <span class="flex size-10 items-center justify-center rounded-xl bg-campaign-700" aria-hidden="true">
                 <svg class="size-5 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"><path d="M271.9 20.2c-9.8-5.6-21.9-5.6-31.8 0l-224 128c-12.6 7.2-18.8 22-15.1 36S17.5 208 32 208l32 0 0 208 0 0-51.2 38.4C4.7 460.4 0 469.9 0 480 0 497.7 14.3 512 32 512l448 0c17.7 0 32-14.3 32-32 0-10.1-4.7-19.6-12.8-25.6l-51.2-38.4 0-208 32 0c14.5 0 27.2-9.8 30.9-23.8s-2.5-28.8-15.1-36l-224-128zM400 208l0 208-64 0 0-208 64 0zm-112 0l0 208-64 0 0-208 64 0zm-112 0l0 208-64 0 0-208 64 0zM256 96a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/></svg>
@@ -314,7 +364,7 @@
               As Rothesay's Town Treasurer for 12 years, I've managed multi-million dollar budgets, worked alongside elected officials, and understand the financial realities of running a municipality. This isn't theory &mdash; it's what I do every day.
             </p>
           </div>
-          <div class="rounded-2xl bg-white/5 backdrop-blur-sm p-8 ring-1 ring-white/10">
+          <div class="rounded-2xl bg-white/5 backdrop-blur-sm p-8 ring-1 ring-white/10 reveal">
             <h3 class="text-lg font-bold text-white flex items-center gap-3 font-heading">
               <span class="flex size-10 items-center justify-center rounded-xl bg-campaign-700" aria-hidden="true">
                 <svg class="size-5 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"><path d="M200 48l112 0c4.4 0 8 3.6 8 8l0 40-128 0 0-40c0-4.4 3.6-8 8-8zm-56 8l0 40-80 0C28.7 96 0 124.7 0 160l0 96 512 0 0-96c0-35.3-28.7-64-64-64l-80 0 0-40c0-30.9-25.1-56-56-56L200 0c-30.9 0-56 25.1-56 56zM512 304l-192 0 0 16c0 17.7-14.3 32-32 32l-64 0c-17.7 0-32-14.3-32-32l0-16-192 0 0 112c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-112z"/></svg>
@@ -325,7 +375,7 @@
               Over 40 years helping local small businesses with financial planning and tax matters has given me a deep understanding of what entrepreneurs need to thrive &mdash; and what the town can do to support them.
             </p>
           </div>
-          <div class="rounded-2xl bg-white/5 backdrop-blur-sm p-8 ring-1 ring-white/10">
+          <div class="rounded-2xl bg-white/5 backdrop-blur-sm p-8 ring-1 ring-white/10 reveal">
             <h3 class="text-lg font-bold text-white flex items-center gap-3 font-heading">
               <span class="flex size-10 items-center justify-center rounded-xl bg-campaign-700" aria-hidden="true">
                 <svg class="size-5 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"><path d="M256 0a64 64 0 1 1 0 128 64 64 0 1 1 0-128zm96 312c0 25-12.7 47-32 59.9l0 92.1c0 26.5-21.5 48-48 48l-32 0c-26.5 0-48-21.5-48-48l0-92.1C172.7 359 160 337 160 312l0-40c0-53 43-96 96-96s96 43 96 96l0 40zM96 32a56 56 0 1 1 0 112 56 56 0 1 1 0-112zm16 240l0 32c0 32.5 12.1 62.1 32 84.7l0 75.3c0 1.2 0 2.5 .1 3.7-8.5 7.6-19.7 12.3-32.1 12.3l-32 0c-26.5 0-48-21.5-48-48l0-56.6C12.9 364.4 0 343.7 0 320l0-32c0-53 43-96 96-96 12.7 0 24.8 2.5 35.9 6.9-12.6 21.4-19.9 46.4-19.9 73.1zM368 464l0-75.3c19.9-22.5 32-52.2 32-84.7l0-32c0-26.7-7.3-51.6-19.9-73.1 11.1-4.5 23.2-6.9 35.9-6.9 53 0 96 43 96 96l0 32c0 23.7-12.9 44.4-32 55.4l0 56.6c0 26.5-21.5 48-48 48l-32 0c-12.3 0-23.6-4.6-32.1-12.3 0-1.2 .1-2.5 .1-3.7zM416 32a56 56 0 1 1 0 112 56 56 0 1 1 0-112z"/></svg>
@@ -336,7 +386,7 @@
               I didn't just move here &mdash; I built my life here. Over 30 years of raising a family, supporting local sports, and being an active part of this community. I know what Quispamsis needs because I live it.
             </p>
           </div>
-          <div class="rounded-2xl bg-white/5 backdrop-blur-sm p-8 ring-1 ring-white/10">
+          <div class="rounded-2xl bg-white/5 backdrop-blur-sm p-8 ring-1 ring-white/10 reveal">
             <h3 class="text-lg font-bold text-white flex items-center gap-3 font-heading">
               <span class="flex size-10 items-center justify-center rounded-xl bg-campaign-700" aria-hidden="true">
                 <svg class="size-5 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" fill="currentColor"><path d="M268.9 85.2L152.3 214.8c-4.6 5.1-4.4 13 .5 17.9 30.5 30.5 80 30.5 110.5 0l31.8-31.8c4.2-4.2 9.5-6.5 14.9-6.9 6.8-.6 13.8 1.7 19 6.9L505.6 376 576 320 576 32 464 96 440.2 80.1C424.4 69.6 405.9 64 386.9 64l-70.4 0c-1.1 0-2.3 0-3.4 .1-16.9 .9-32.8 8.5-44.2 21.1zM116.6 182.7L223.4 64 183.8 64c-25.5 0-49.9 10.1-67.9 28.1L112 96 0 32 0 320 156.4 450.3c23 19.2 52 29.7 81.9 29.7l15.7 0-7-7c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l41 41 9 0c19.1 0 37.8-4.3 54.8-12.3L359 441c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l32 32 17.5-17.5c8.9-8.9 11.5-21.8 7.6-33.1l-137.9-136.8-14.9 14.9c-49.3 49.3-129.1 49.3-178.4 0-23-23-23.9-59.9-2.2-84z"/></svg>
@@ -356,7 +406,7 @@
   <section id="community" class="bg-white py-24 sm:py-32" aria-labelledby="community-heading">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
       <div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-none lg:grid lg:grid-cols-12 lg:gap-16">
-        <div class="lg:col-span-5">
+        <div class="lg:col-span-5 reveal from-left">
           <p class="text-sm font-bold uppercase tracking-widest text-campaign-700">Community First</p>
           <h2 id="community-heading" class="mt-3 text-3xl font-bold tracking-tight text-navy-900 sm:text-4xl font-heading">Proud to Call Quispamsis Home</h2>
           <p class="mt-6 text-lg text-navy-600 leading-relaxed">
@@ -366,11 +416,11 @@
             Ranked the #1 community to live in Atlantic Canada, our town represents the best of small-city living: safe neighbourhoods, excellent recreation, and neighbours who look out for each other.
           </p>
           <!-- Community photo -->
-          <div class="mt-8 overflow-hidden rounded-2xl shadow-lg">
+          <div class="mt-8 overflow-hidden rounded-2xl shadow-lg scroll-float" data-float-speed="0.04" data-float-dir="-1">
             <img src="photos/qplex-aerial.jpg" alt="Aerial view of the Q-Plex recreation complex in Quispamsis" class="w-full aspect-[2/1] object-cover" loading="lazy" />
           </div>
         </div>
-        <div class="mt-12 lg:mt-0 lg:col-span-7">
+        <div class="mt-12 lg:mt-0 lg:col-span-7 reveal from-right">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div class="rounded-2xl bg-campaign-50 p-8 ring-1 ring-campaign-100">
               <div class="size-12 rounded-xl bg-campaign-700 flex items-center justify-center mb-4" aria-hidden="true">
@@ -402,7 +452,7 @@
             </div>
           </div>
           <!-- Saint John area photo -->
-          <div class="mt-6 overflow-hidden rounded-2xl shadow-lg">
+          <div class="mt-6 overflow-hidden rounded-2xl shadow-lg scroll-float" data-float-speed="0.04" data-float-dir="1">
             <img src="photos/park.jpg" alt="Community park in Quispamsis" class="w-full aspect-[2/1] object-cover" loading="lazy" />
           </div>
         </div>
@@ -418,7 +468,7 @@
     </div>
     <div class="px-6 py-24 sm:py-32 lg:px-8 relative">
       <div class="mx-auto max-w-2xl text-center">
-        <h2 id="cta-heading" class="text-4xl font-bold tracking-tight text-white sm:text-5xl font-heading">
+        <h2 id="cta-heading" class="text-4xl font-bold tracking-tight text-white sm:text-5xl font-heading reveal">
           Election Day: May 11, 2026
         </h2>
         <p class="mx-auto mt-6 max-w-xl text-lg text-green-100 leading-relaxed">
@@ -441,7 +491,7 @@
   <section id="contact" class="bg-gray-50 py-24 sm:py-32" aria-labelledby="contact-heading">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
       <div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-none lg:grid lg:grid-cols-2 lg:gap-16">
-        <div>
+        <div class="reveal from-left">
           <p class="text-sm font-bold uppercase tracking-widest text-campaign-700">Get in Touch</p>
           <h2 id="contact-heading" class="mt-3 text-3xl font-bold tracking-tight text-navy-900 sm:text-4xl font-heading">Let's Talk About Quispamsis</h2>
           <p class="mt-6 text-lg text-navy-600 leading-relaxed">
@@ -486,7 +536,7 @@
             </div>
           </div>
         </div>
-        <div class="mt-12 lg:mt-0">
+        <div class="mt-12 lg:mt-0 reveal from-right">
           <div class="rounded-2xl bg-white p-10 shadow-lg ring-1 ring-gray-100">
             <h3 class="text-xl font-bold text-navy-900 mb-2 font-heading">Request a Lawn Sign</h3>
             <p class="text-sm text-navy-600 mb-6">Want to show your support? Fill in your details and I'll arrange to get a lawn sign to you.</p>
@@ -616,6 +666,40 @@
       statusEl.textContent = 'Your email client should open. If not, email DougMacQuispamsis@gmail.com directly.';
       statusEl.className = 'text-sm text-center text-campaign-700 font-semibold mt-2';
     });
+
+    // Scroll-triggered reveal animations
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+      // Scroll-driven floating for images
+      const floaters = document.querySelectorAll('.scroll-float');
+      let ticking = false;
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          requestAnimationFrame(() => {
+            const vh = window.innerHeight;
+            floaters.forEach(el => {
+              const rect = el.getBoundingClientRect();
+              const center = rect.top + rect.height / 2;
+              const offset = (center - vh / 2) * parseFloat(el.dataset.floatSpeed || 0.04);
+              const dir = parseInt(el.dataset.floatDir || 1);
+              el.style.transform = `translateY(${offset * dir}px)`;
+            });
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, { passive: true });
+    }
   </script>
 
 </body>
